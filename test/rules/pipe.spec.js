@@ -127,7 +127,7 @@ describe("Test rule: pipe", () => {
 	it("should work correctly in async mode", async () => {
 		const check = v.compile({ $$async: true, a: { type: "pipe", steps: [{ type: "custom", async check(value) {
 			await new Promise((resolve) => {
-				setTimeout(() => {resolve();}, 10);
+				setTimeout(resolve, 10);
 			});
 			return " " + String(Number(value.trim()) + 1) + " ";
 		} }] } });
