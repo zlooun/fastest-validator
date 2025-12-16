@@ -109,4 +109,30 @@ describe("Test rule: pipe", () => {
 			message: "The 'amount' field must be a number."
 		}]);
 	});
+
+	it("should return value if steps is not an array", () => {
+		const check = v.compile({ a: { type: "pipe", steps: {} } });
+		const obj = { a: " 42 " };
+		expect(check(obj)).toBe(true);
+		expect(obj.a).toBe(" 42 ");
+	});
+
+	it("should return value if steps is missing", async () => {
+		const check = v.compile({ a: { type: "pipe" } });
+		const obj = { a: " 42 " };
+		expect(check(obj)).toBe(true);
+		expect(obj.a).toBe(" 42 ");
+	});
+
+	it("should work correctly in async mode", async () => {
+		const check = v.compile({ $$async: true, a: { type: "pipe", steps: [{ type: "custom", async check(value) {
+			await new Promise((resolve) => {
+				setTimeout(() => {resolve();}, 10);
+			});
+			return " " + String(Number(value.trim()) + 1) + " ";
+		} }] } });
+		const obj = { a: " 42 " };
+		expect(await check(obj)).toBe(true);
+		expect(obj.a).toBe(" 43 ");
+	});
 });
